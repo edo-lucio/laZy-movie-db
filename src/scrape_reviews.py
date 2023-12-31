@@ -40,7 +40,7 @@ def scrape_review(url):
     response = requests.get(url)
     
     if response.status_code == 200:
-        page = BeautifulSoup(response.text, "lxml")
+        page = BeautifulSoup(response.text, "html.parser")
         data = page.find("section", class_= "viewings-list")
         data = data.find_all("li", class_= "film-detail")
         reviews = []
