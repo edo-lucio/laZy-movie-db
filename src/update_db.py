@@ -1,4 +1,9 @@
-import pandas as pd
+from helpers import read_files
+
+import sys
+sys.path.append('')
+
+from configurations.config import DATA_PATH
 
 from pymongo.mongo_client import MongoClient
 import certifi
@@ -13,6 +18,10 @@ logger = logging.getLogger(__name__)
 
 ACC_DB = os.getenv("DB_ACC")
 
+client = MongoClient(ACC_DB, ssl_ca_certs=certifi.where())
+db = client.get_database("movies_db")
+collection = db.get_collection("movies_list")
+
 def create_movie_document(movies, id):
    movie = movies[movies["id"] == id].to_dict(orient='records')
    movie_document = {key: list(set([d[key] for d in movie]))[0] if len(set([d[key] for d in movie])) == 1 else list(set([d[key] for d in movie])) for key in movie[0]}
@@ -21,26 +30,22 @@ def create_movie_document(movies, id):
 
 def create_review_document(reviews, id):
    reviews_document = reviews[reviews["id"] == id].to_dict(orient='records')
+   reviews_document = reviews[["review", "reviewer", "rating"]]
 
    return reviews_document
 
-def create_db(collection):
-   movies = pd.read_csv("./movies_df.csv", dtype={"id": str})
-   reviews = pd.read_csv("./movies_reviews.csv", on_bad_lines="skip", dtype={"id": str})
-
-   reviews = reviews[["id", "rating", "review", "reviewer"]]
-   movies = movies.drop(columns=["Unnamed: 0"])
-
-   ids = reviews["id"].unique()
+def insert_documents(data_frames):
+   data_frames_list = list(data_frames.values())
+   ids = min([data_frame["id"].to_list() for data_frame in data_frames_list], key=len)
+   print(ids)
    documents = []
 
    for movie_id in ids:
       try:
-         movie_document  = create_movie_document(movies, movie_id)
-         movie_reviews = create_review_document(reviews, movie_id)
+         movie_document  = create_movie_document(data_frames["movies"], movie_id)
+         movie_reviews = create_review_document(data_frames["reviews"], movie_id)
 
          movie_document["reviews"] = movie_reviews
-         movie_document["adult"] = bool(movie_document["adult"])
          
          documents.append(movie_document)
 
@@ -50,14 +55,9 @@ def create_db(collection):
 
    collection.insert_many(documents)
    
-def main():
-   client = MongoClient(ACC_DB, ssl_ca_certs=certifi.where())
-   db = client.get_database("movie_db")
-   collection = db.get_collection("movie_list")
-
-   create_db(collection)
-
-   logging.info("# done!")
+def update_db():
+   data = read_files(DATA_PATH)
+   insert_documents(data)
 
 if __name__ == "__main__":
-   main()
+   update_db()

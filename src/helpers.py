@@ -34,14 +34,15 @@ def process_review(text):
 
     return text
 
-def multiprocess(function, df, **kwargs):
-    print(*kwargs)
+def read_files(path):
+    dir = os.listdir(path)
+    data_frames = {}
 
-    with Pool(processes=NUMBER_OF_PARALLEL_PROCESSES) as pool:
-        results = pool.map(function, df.itertuples(), kwargs)
+    for file in dir:
+        df = pd.read_csv(f'{path}/{file}')
+        data_frames[file.split(".")[0]] = df
 
-    new_df = pd.concat(results)
-    return new_df
+    return data_frames
 
 def write_to_csv(df, path):
     file_exists = os.path.isfile(path)
