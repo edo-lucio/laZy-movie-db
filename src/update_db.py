@@ -1,4 +1,5 @@
 from helpers import read_files
+import numpy as np
 
 import sys
 sys.path.append('')
@@ -29,35 +30,64 @@ def create_movie_document(movies, id):
    return movie_document
 
 def create_review_document(reviews, id):
-   reviews_document = reviews[reviews["id"] == id].to_dict(orient='records')
-   reviews_document = reviews[["review", "reviewer", "rating"]]
-
+   reviews_document = reviews[reviews["id"] == id][["review", "reviewer", "rating"]].to_dict(orient='records')
    return reviews_document
 
-def insert_documents(data_frames):
-   data_frames_list = list(data_frames.values())
-   ids = min([data_frame["id"].to_list() for data_frame in data_frames_list], key=len)
-   print(ids)
+def insert_documents(movies, reviews):
+   ids = min([movies["id"], reviews["id"]], key=len)
    documents = []
 
    for movie_id in ids:
-      try:
-         movie_document  = create_movie_document(data_frames["movies"], movie_id)
-         movie_reviews = create_review_document(data_frames["reviews"], movie_id)
-
-         movie_document["reviews"] = movie_reviews
-         
-         documents.append(movie_document)
-
-      except Exception as e:
-         print(f"{e}")
-         continue
+      movie_document  = create_movie_document(movies, movie_id)
+      movie_reviews = create_review_document(reviews, movie_id)
+      movie_document["reviews"] = movie_reviews
+      
+      documents.append(movie_document)
+      # collection.insert_one(movie_document)
 
    collection.insert_many(documents)
    
 def update_db():
    data = read_files(DATA_PATH)
-   insert_documents(data)
+   movies = data["movies"]
+   reviews = data["reviews"]
+
+   insert_documents(movies, reviews)
 
 if __name__ == "__main__":
    update_db()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
