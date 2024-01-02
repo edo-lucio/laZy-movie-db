@@ -1,3 +1,4 @@
 .env
 nb.ipynb
 movies_reviews.csv
+GoogleNews-vectors-negative300.bin
