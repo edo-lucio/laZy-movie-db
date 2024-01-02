@@ -1,5 +1,5 @@
-from get_movies import update_movies
-from scrape_reviews import update_reviews
+from src.get_data.get_movies import update_movies
+from src.get_data.scrape_reviews import update_reviews
 from update_db import update_db
 
 YEAR_RANGE = [i for i in range(2024, 2025)] # next year ;)

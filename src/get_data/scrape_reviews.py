@@ -3,8 +3,11 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 
+import sys
+sys.path.append('')
+
 from random import randint
-from helpers import convert_star_ratings, process_review, write_to_csv
+from src.helpers import convert_star_ratings, process_review, write_to_csv
 
 import time, random, string as s
 import logging
@@ -12,7 +15,7 @@ import logging
 from multiprocessing import Pool
 
 import sys
-sys.path.append('')
+sys.path.append('..')
 
 from configurations.config import MOVIES_PATH, NUMBER_OF_PARALLEL_PROCESSES, REVIEWS_PATH, NUMBER_OF_REVIEWS
 

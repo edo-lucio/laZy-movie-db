@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from multiprocessing import Pool
 
 import sys
-sys.path.append('')
+sys.path.append('..')
 
 from configurations.config import MOVIES_PATH, NUMBER_OF_PARALLEL_PROCESSES, MOVIES_PER_YEAR
 
