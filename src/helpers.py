@@ -1,13 +1,12 @@
 import re
 import os
 import pandas as pd
+import nltk
 
 from multiprocessing import Pool
 
 import sys
 sys.path.append('')
-
-from configurations.config import  NUMBER_OF_PARALLEL_PROCESSES
 
 def remove_substring_between_chars(input_string, start_char, end_char):
     pattern = re.escape(start_char) + '.*?' + re.escape(end_char)
@@ -43,6 +42,9 @@ def read_files(path):
         data_frames[file.split(".")[0]] = df
 
     return data_frames
+
+def download_updates():
+    nltk.download('wordnet')
 
 def write_to_csv(df, path):
     file_exists = os.path.isfile(path)
