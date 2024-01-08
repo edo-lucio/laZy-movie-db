@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 API_KEY = os.getenv("TMDB")
 BASE_URL = 'https://api.themoviedb.org/3'
 
-def make_req(year, page=1, per_page=20):
+def make_req(year, page=1, per_page=200):
     endpoint = '/discover/movie'
     params = {
         'api_key': API_KEY,
